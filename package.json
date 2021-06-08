@@ -1,0 +1,26 @@
+{
+  "name": "use-switch-tabs",
+  "version": "0.1.0",
+  "description": "React hook used to convert Switch-like component to Tabs-like component state.",
+  "main": "index.ts",
+  "repository": "https://github.com/theprimone/use-switch-tabs.git",
+  "author": "theprimone <yuns.xie@qq.com>",
+  "license": "MIT",
+  "scripts": {
+    "build": "father-build build"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.170",
+    "@types/react": "^17.0.9",
+    "father-build": "^1.19.6",
+    "typescript": "^4.3.2"
+  },
+  "dependencies": {
+    "@qixian.cs/path-to-regexp": "^6.1.0",
+    "ahooks": "^2.10.5",
+    "hash-string": "^1.0.0",
+    "history": "^5.0.0",
+    "lodash": "^4.17.21",
+    "react": "^17.0.2"
+  }
+}
