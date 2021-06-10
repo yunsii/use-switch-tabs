@@ -59,10 +59,10 @@ export interface UseSwitchTabsOptions {
     /** 是否强制渲染，参考 [Tabs.TabPane.forceRender](https://ant.design/components/tabs-cn/#Tabs.TabPane) */
     force?: boolean;
   };
-  children?: JSX.Element;
+  children: JSX.Element;
   originalRoutes: MakeUpRoute[];
   location: H.Location;
-  history: H.History;
+  history: Pick<H.History, 'push'>;
 
   /**
    *

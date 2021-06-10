@@ -1,4 +1,5 @@
 // @ts-nocheck
+import React from 'react';
 import ReactDOM from 'react-dom';
 import { renderRoutes } from '@vitjs/runtime';
 import { Router, history } from '@vitjs/runtime';

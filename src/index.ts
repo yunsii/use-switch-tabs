@@ -1,8 +1,9 @@
 import * as H from 'history';
 
 import { default as useSwitchTabs } from './useSwitchTabs';
+import type { UseSwitchTabsOptions } from './useSwitchTabs';
 
-export interface SwitchTab {
+interface SwitchTab {
   title: React.ReactNode;
   key: string;
   content: JSX.Element;
@@ -10,7 +11,9 @@ export interface SwitchTab {
   location: Omit<H.Location, 'key'>;
 }
 
-export type RoughLocation = Omit<H.Location, 'key'>;
+type RoughLocation = Omit<H.Location, 'key'>;
+
+export type { UseSwitchTabsOptions, SwitchTab, RoughLocation };
 
 export { useSwitchTabs };
 

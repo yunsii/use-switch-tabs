@@ -1,3 +1,4 @@
+import React from 'react';
 import Block from '@/components/Block';
 
 const Layout: React.FC = ({ children }) => {

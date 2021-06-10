@@ -1,3 +1,5 @@
+import React from 'react';
+
 export default function Block({ children }: { children?: React.ReactNode }) {
   if (!children) {
     return null;
