@@ -1,12 +1,24 @@
 import React from 'react';
-import Block from '@/components/Block';
-import Button from '@/components/Button';
+import { Alert, Card, Form, Input, Tag } from 'antd';
 
-export default function Hello() {
+import { withSwitchTab } from '../../../../src';
+
+function Hello() {
+  const renderCount = React.useRef(0);
+  renderCount.current += 1;
+
   return (
-    <Block>
-      <h2>Welcome Page</h2> <br />
-      <Button>Button</Button>
-    </Block>
+    <div>
+      <Card>
+        <Alert message='已优化渲染性能' type='info' />
+        <h2>Welcome Page</h2>
+        <Form.Item label='状态'>
+          <Input defaultValue='Welcome' style={{ width: 240 }} />
+        </Form.Item>
+        <div>renderCount: {renderCount.current}</div>
+      </Card>
+    </div>
   );
 }
+
+export default withSwitchTab(Hello);
