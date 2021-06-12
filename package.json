@@ -8,7 +8,8 @@
   "license": "MIT",
   "scripts": {
     "build": "father-build build",
-    "dev": "cd example && vite --host"
+    "dev": "cd example && vite --host",
+    "build:demo": "cd example && vite build"
   },
   "dependencies": {
     "@qixian.cs/path-to-regexp": "^6.1.0",
