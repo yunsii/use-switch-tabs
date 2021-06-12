@@ -14,6 +14,8 @@ import { SwitchTab, RoughLocation } from '.';
 export interface MakeUpRoute {
   /** 子菜单 */
   children?: MakeUpRoute[];
+  /** 子菜单 */
+  routes?: MakeUpRoute[];
   /** 在菜单中隐藏子节点 */
   hideChildrenInMenu?: boolean;
   /** 在菜单中隐藏自己和子节点 */

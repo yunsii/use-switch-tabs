@@ -62,6 +62,9 @@ function getOriginalRenderRoute(location: RoughLocation, originalRoutes: MakeUpR
     if (Array.isArray(targetRoute?.children) && targetRoute?.children.length) {
       result = getMetadata(targetRoute!.children!, targetRoute!) || result;
     }
+    if (Array.isArray(targetRoute?.routes) && targetRoute?.routes.length) {
+      result = getMetadata(targetRoute!.routes!, targetRoute!) || result;
+    }
 
     return result;
   }
@@ -186,7 +189,7 @@ export const routePagePropsAreEqual = (prevProps: any, nextProps: any) => {
   return true;
 };
 
-export function withRouteTab<Props = unknown>(
+export function withSwitchTab<Props = unknown>(
   WrappedComponent: React.ComponentType<Props>
 ): React.MemoExoticComponent<any> {
   const WithRoutePage = React.memo((props: any) => {

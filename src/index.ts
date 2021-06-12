@@ -1,6 +1,7 @@
 import * as H from 'history';
 
 import { default as useSwitchTabs } from './useSwitchTabs';
+import { withSwitchTab } from './utils';
 import type { UseSwitchTabsOptions } from './useSwitchTabs';
 
 interface SwitchTab {
@@ -15,6 +16,6 @@ type RoughLocation = Omit<H.Location, 'key'>;
 
 export type { UseSwitchTabsOptions, SwitchTab, RoughLocation };
 
-export { useSwitchTabs };
+export { useSwitchTabs, withSwitchTab };
 
 export default useSwitchTabs;
