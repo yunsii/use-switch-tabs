@@ -3,12 +3,15 @@
     "target": "ES2019",
     "module": "ESNext",
     "jsx": "react",
+    "baseUrl": "./src",
     "declaration": true,
+    "sourceMap": true,
     "strict": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "preserveWatchOutput": true
-  }
+  },
+  "exclude": ["example"]
 }
