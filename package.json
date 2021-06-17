@@ -9,7 +9,7 @@
   "author": "theprimone <yuns.xie@qq.com>",
   "license": "MIT",
   "scripts": {
-    "build": "father-build build",
+    "build": "father build",
     "dev": "cd example && vite --host",
     "build:demo": "cd example && vite build"
   },
@@ -29,7 +29,7 @@
     "@vitjs/runtime": "^0.6.0",
     "@vitjs/vit": "^0.6.2",
     "antd": "^4.16.2",
-    "father-build": "^1.19.6",
+    "father": "^2.30.6",
     "react-dom": "^17.0.2",
     "typescript": "^4.3.2",
     "vite": "^2.3.7",

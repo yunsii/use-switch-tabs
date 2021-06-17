@@ -1,17 +1,10 @@
 {
   "compilerOptions": {
-    "target": "ES2019",
-    "module": "ESNext",
-    "jsx": "react",
-    "baseUrl": "./src",
-    "declaration": true,
-    "sourceMap": true,
-    "strict": true,
+    "target": "esnext",
     "moduleResolution": "node",
-    "esModuleInterop": true,
+    "baseUrl": "./",
+    "declaration": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "preserveWatchOutput": true
-  },
-  "exclude": ["example"]
+    "esModuleInterop": true
+  }
 }
