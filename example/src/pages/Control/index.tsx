@@ -21,35 +21,35 @@ export default function Control() {
         <Button
           type='primary'
           onClick={() => {
-            window.reloadTab();
+            window.tabsAction.reloadTab();
           }}
         >
           reload tab
         </Button>
         <Button
           onClick={() => {
-            window.goBackTab();
+            window.tabsAction.goBackTab();
           }}
         >
           go back tab
         </Button>
         <Button
           onClick={() => {
-            window.closeTab();
+            window.tabsAction.closeTab();
           }}
         >
           close tab
         </Button>
         <Button
           onClick={() => {
-            window.closeAndGoBackTab();
+            window.tabsAction.closeAndGoBackTab();
           }}
         >
           close and go back tab
         </Button>
         <Button
           onClick={() => {
-            window.closeAndGoBackTab('/profile/basic', () => window.reloadTab('/profile/basic'));
+            window.tabsAction.closeAndGoBackTab('/profile/basic', () => window.tabsAction.reloadTab('/profile/basic'));
           }}
         >
           close, go to '/profile/basic' and refresh

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Tabs, Dropdown, Menu } from 'antd';
 import { TabsProps } from 'antd/lib/tabs';
 import { MenuProps } from 'antd/lib/menu';
@@ -8,7 +8,7 @@ import classNames from 'classnames';
 import _get from 'lodash/get';
 import { history, useLocation } from '@vitjs/runtime';
 
-import useSwitchTabs, { UseSwitchTabsOptions } from '../../../../src';
+import useSwitchTabs, { UseSwitchTabsOptions, ActionType } from '../../../../src';
 
 enum CloseTabKey {
   Current = 'current',
@@ -36,6 +36,7 @@ export default function RouteTabs(props: RouteTabsProps): JSX.Element {
   const { mode, fixed, originalRoutes, setTabTitle, persistent, children, ...rest } = props;
 
   const location = useLocation();
+  const actionRef = useRef<ActionType>();
 
   const { tabs, activeKey, handleSwitch, handleRemove, handleRemoveOthers, handRemoveRightTabs } = useSwitchTabs({
     children,
@@ -45,6 +46,7 @@ export default function RouteTabs(props: RouteTabsProps): JSX.Element {
     persistent,
     location,
     history,
+    actionRef,
   });
 
   const remove = usePersistFn((key: string) => {
@@ -91,6 +93,10 @@ export default function RouteTabs(props: RouteTabsProps): JSX.Element {
       </Dropdown>
     </span>
   ));
+
+  useEffect(() => {
+    window.tabsAction = actionRef.current!;
+  }, [actionRef.current]);
 
   return (
     <Tabs

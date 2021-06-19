@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { useLocalStorageState, usePersistFn, usePrevious } from 'ahooks';
 import _find from 'lodash/find';
 import _findIndex from 'lodash/findIndex';
@@ -54,6 +54,15 @@ export interface SetTabTitlePayload {
 
 export type SetTabTitleFn = (payload: SetTabTitlePayload) => React.ReactNode | void;
 
+export interface ActionType {
+  reloadTab: (path?: string) => void;
+  /** 如果已经打开的标签页会触发 callback ，如果 force 为 true ，总会调用 callback */
+  goBackTab: (path?: string, callback?: () => void, force?: boolean) => void;
+  /** 关闭后自动切换到附近的标签页，如果是最后一个标签页不可删除 */
+  closeTab: (path?: string, callback?: () => void, force?: boolean) => void;
+  closeAndGoBackTab: (path?: string, callback?: () => void, force?: boolean) => void;
+}
+
 export interface UseSwitchTabsOptions {
   mode?: Mode;
   /** tabs 持久化 */
@@ -75,12 +84,23 @@ export interface UseSwitchTabsOptions {
    * @param location
    */
   setTabTitle?: SetTabTitleFn;
+  actionRef?: React.MutableRefObject<ActionType | undefined> | ((actionRef: ActionType) => void);
 }
 
 function useSwitchTabs(options: UseSwitchTabsOptions) {
-  const { mode = Mode.Route, setTabTitle, originalRoutes, persistent, location, history, children } = options;
+  const {
+    mode = Mode.Route,
+    setTabTitle,
+    originalRoutes,
+    persistent,
+    location,
+    history,
+    children,
+    actionRef: propsActionRef,
+  } = options;
   const currentTabLocation = _omit(location, ['key']);
 
+  const actionRef = useRef<ActionType>();
   const [tabLocations, setTabLocations] = useLocalStorageState<SwitchTab['location'][]>('tabLocations', []);
   const [tabs, setTabs] = useState<SwitchTab[]>(() => {
     if (persistent && _isArray(tabLocations) && tabLocations.length) {
@@ -290,20 +310,24 @@ function useSwitchTabs(options: UseSwitchTabsOptions) {
   }, [persistent, tabs]);
 
   useEffect(() => {
-    window.reloadTab = reloadTab;
-    window.goBackTab = goBackTab;
-    window.closeTab = closeTab;
-    window.closeAndGoBackTab = closeAndGoBackTab;
+    actionRef.current = {
+      reloadTab,
+      goBackTab,
+      closeTab,
+      closeAndGoBackTab,
+    };
 
     return () => {
       const hint = () => {
-        console.warn(`PageTabs had unmounted.`);
+        console.warn(`useSwitchTabs had unmounted.`);
       };
 
-      window.reloadTab = hint;
-      window.goBackTab = hint;
-      window.closeTab = hint;
-      window.closeAndGoBackTab = hint;
+      actionRef.current = {
+        reloadTab: hint,
+        goBackTab: hint,
+        closeTab: hint,
+        closeAndGoBackTab: hint,
+      };
     };
   }, []);
 
@@ -334,6 +358,14 @@ function useSwitchTabs(options: UseSwitchTabsOptions) {
     // 比如在非当前 location 对应的标签页的标签菜单中触发删除其他标签页，会导致本应只有一个标签页时，
     // 但会再次创建一个当前 location 对应的标签页
   }, [children, currentTabKey]);
+
+  if (propsActionRef) {
+    if (typeof propsActionRef === 'function') {
+      propsActionRef(actionRef.current);
+    } else {
+      propsActionRef.current = actionRef.current;
+    }
+  }
 
   return {
     tabs,
