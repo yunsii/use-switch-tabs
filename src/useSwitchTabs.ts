@@ -11,48 +11,39 @@ import { getRenderRoute, getRenderRouteKey } from './utils';
 import { Mode } from './config';
 import { SwitchTab, RoughLocation } from '.';
 
-export interface MakeUpRoute {
-  /** 子菜单 */
-  children?: MakeUpRoute[];
-  /** 子菜单 */
-  routes?: MakeUpRoute[];
+export interface RouteConfig {
+  /** 子路由 */
+  children?: RouteConfig[];
+  /** 子路由 */
+  routes?: RouteConfig[];
   /** 在菜单中隐藏子节点 */
   hideChildrenInMenu?: boolean;
   /** 在菜单中隐藏自己和子节点 */
   hideInMenu?: boolean;
-  /** 菜单的icon */
-  icon?: React.ReactNode;
-  /** 自定义菜单的国际化 key */
-  locale?: string | false;
   /** 菜单的名字 */
   name?: string;
-  /** 用于标定选中的值，默认是 path */
-  key?: string;
-  /** disable 菜单选项 */
-  disabled?: boolean;
-  /** 路径,可以设定为网页链接 */
+  /** 路径 */
   path?: string;
   /** 配置该路由标签页紧跟指定的某个路由 */
   follow?: string;
   component?: React.ComponentType<{ location: H.Location }>;
-  title?: string;
 }
 
-export interface RenderRoute extends Omit<MakeUpRoute, 'title'> {
+export interface RenderRoute extends Omit<RouteConfig, 'name'> {
   renderKey: string;
   /** Mode.Dynamic 会计算路由参数的 hash 值 */
   hash?: string;
-  title?: React.ReactNode;
+  name?: React.ReactNode;
 }
 
-export interface SetTabTitlePayload {
+export interface SetTabNamePayload {
   path: string;
-  title?: string;
+  name?: string;
   params: any;
   location: RoughLocation;
 }
 
-export type SetTabTitleFn = (payload: SetTabTitlePayload) => React.ReactNode | void;
+export type SetTabNameFn = (payload: SetTabNamePayload) => React.ReactNode | void;
 
 export interface ActionType {
   reloadTab: (path?: string) => void;
@@ -66,31 +57,26 @@ export interface ActionType {
 export interface UseSwitchTabsOptions {
   mode?: Mode;
   /** tabs 持久化 */
-  persistent?: {
-    /** 是否强制渲染，参考 [Tabs.TabPane.forceRender](https://ant.design/components/tabs-cn/#Tabs.TabPane) */
-    force?: boolean;
-  };
+  persistent?:
+    | {
+        /** 是否强制渲染，参考 [Tabs.TabPane.forceRender](https://ant.design/components/tabs-cn/#Tabs.TabPane) */
+        force?: boolean;
+      }
+    | boolean;
   children: JSX.Element;
-  originalRoutes: MakeUpRoute[];
+  originalRoutes: RouteConfig[];
   location: H.Location;
   history: Pick<H.History, 'push'>;
-
-  /**
-   *
-   *
-   * @param path 标签页路由
-   * @param locale 国际化后的标题
-   * @param params 根据路由解析得到的参数
-   * @param location
-   */
-  setTabTitle?: SetTabTitleFn;
   actionRef?: React.MutableRefObject<ActionType | undefined> | ((actionRef: ActionType) => void);
+
+  /** Mode.Dynamic 时可用  */
+  setTabName?: SetTabNameFn;
 }
 
 function useSwitchTabs(options: UseSwitchTabsOptions) {
   const {
     mode = Mode.Route,
-    setTabTitle,
+    setTabName,
     originalRoutes,
     persistent,
     location,
@@ -109,7 +95,7 @@ function useSwitchTabs(options: UseSwitchTabsOptions) {
           location: tabLocation,
           mode,
           originalRoutes,
-          setTabTitle,
+          setTabName,
         });
         return {
           title: renderRoute.name,
@@ -125,10 +111,10 @@ function useSwitchTabs(options: UseSwitchTabsOptions) {
   });
 
   const currentRenderRoute = getRenderRoute({
-    location,
+    location: currentTabLocation,
     mode,
     originalRoutes,
-    setTabTitle,
+    setTabName,
   });
 
   const currentTabKey = useMemo(() => {
@@ -210,7 +196,6 @@ function useSwitchTabs(options: UseSwitchTabsOptions) {
     setTabs((prevTabs) => {
       let result = [...prevTabs];
       if (follow) {
-        console.log(`follow: ${follow}`);
         const targetIndex = _findIndex(prevTabs, (tab) => {
           if (mode === Mode.Route) {
             return tab.key === follow;
@@ -252,7 +237,9 @@ function useSwitchTabs(options: UseSwitchTabsOptions) {
         return;
       }
 
-      console.log(`reload tab key: ${reloadKey}`);
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`reload tab key: ${reloadKey}`);
+      }
       const updatedTabs = tabs.map((item) => {
         if (item.key === reloadKey) {
           const { title: prevTabTitle, location: prevLocation, content: prevContent, ...rest } = item;
@@ -339,7 +326,9 @@ function useSwitchTabs(options: UseSwitchTabsOptions) {
       if (!_isEqual(currentTabLocation, prevTabLocation)) {
         reloadTab(currentTabKey, currentRenderRoute.name, currentTabLocation, children);
       } else {
-        console.log(`no effect of tab key: ${currentTabKey}`);
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`no effect of tab key: ${currentTabKey}`);
+        }
       }
     } else {
       const newTab = {
@@ -351,7 +340,9 @@ function useSwitchTabs(options: UseSwitchTabsOptions) {
 
       const { follow } = currentRenderRoute || {};
 
-      console.log(`add tab key: ${currentTabKey}`);
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`add tab key: ${currentTabKey}`);
+      }
       addTab(newTab, follow);
     }
     // 不可将当前 location 作为依赖，否则在操作非当前 location 对应的标签页时会有异常

@@ -7,11 +7,11 @@ import hash from 'hash-string';
 import { pathToRegexp, match as pathMatch } from '@qixian.cs/path-to-regexp';
 
 import { Mode } from './config';
-import { MakeUpRoute, RenderRoute, SetTabTitleFn } from './useSwitchTabs';
+import { RouteConfig, RenderRoute, SetTabNameFn } from './useSwitchTabs';
 import { RoughLocation } from '.';
 
-export function isRouteTab(location: RoughLocation, originalRoutes: MakeUpRoute[]): boolean {
-  function isInMenus(menuData: MakeUpRoute[]) {
+export function isRouteTab(location: RoughLocation, originalRoutes: RouteConfig[]): boolean {
+  function isInMenus(menuData: RouteConfig[]) {
     const targetMenuItem = _find(menuData, (item) => pathToRegexp(`${item.path}(.*)`).test(location.pathname));
 
     return !!targetMenuItem;
@@ -30,14 +30,14 @@ const pathnameMapCache: {
  * @param location
  * @param originalRoutes 原始路由数据，未经过滤处理
  */
-function getOriginalRenderRoute(location: RoughLocation, originalRoutes: MakeUpRoute[]): RenderRoute {
+function getOriginalRenderRoute(location: RoughLocation, originalRoutes: RouteConfig[]): RenderRoute {
   const { pathname } = location;
 
   if (pathnameMapCache[pathname]) {
     return pathnameMapCache[pathname];
   }
 
-  function getMetadata(menuData: MakeUpRoute[], parent: MakeUpRoute | null): RenderRoute {
+  function getMetadata(menuData: RouteConfig[], parent: RouteConfig | null): RenderRoute {
     let result: any;
 
     /** 根据前缀匹配菜单项，因此，`BasicLayout` 下的 **一级路由** 只要配置了 `name` 属性，总能找到一个 `path` 和 `name` 的组合 */
@@ -71,8 +71,9 @@ function getOriginalRenderRoute(location: RoughLocation, originalRoutes: MakeUpR
 
   const result = getMetadata(originalRoutes, null);
 
-  pathnameMapCache[pathname] = result;
-  return result;
+  /** 在存在页面子路由，如果不赋值 pathname，path 始终指向父路由 */
+  pathnameMapCache[pathname] = { ...result, path: pathname };
+  return pathnameMapCache[pathname];
 }
 
 /**
@@ -102,10 +103,10 @@ export function getParams(path: string, pathname: string): { [key: string]: stri
 export function getRenderRoute(options: {
   location: RoughLocation;
   mode: Mode;
-  originalRoutes: MakeUpRoute[];
-  setTabTitle?: SetTabTitleFn;
+  originalRoutes: RouteConfig[];
+  setTabName?: SetTabNameFn;
 }): RenderRoute {
-  const { location, mode, originalRoutes, setTabTitle } = options;
+  const { location, mode, originalRoutes, setTabName } = options;
 
   const renderRoute = getOriginalRenderRoute(location, originalRoutes);
 
@@ -140,9 +141,9 @@ export function getRenderRoute(options: {
   return {
     ...renderRoute,
     hash: hashString,
-    title:
-      setTabTitle?.({ path: renderRoute.renderKey, title: renderRoute.title as string, params, location }) ||
-      renderRoute.title,
+    name:
+      setTabName?.({ path: renderRoute.path, name: renderRoute.name as string, params, location }) ||
+      renderRoute.name,
   };
 }
 
