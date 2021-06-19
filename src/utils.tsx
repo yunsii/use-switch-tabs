@@ -10,7 +10,8 @@ import { Mode } from './config';
 import { RouteConfig, RenderRoute, SetTabNameFn } from './useSwitchTabs';
 import { RoughLocation } from '.';
 
-export function isRouteTab(location: RoughLocation, originalRoutes: RouteConfig[]): boolean {
+/** 判断给定 location 是否在 originalRoutes 中，可作为标签页展示 */
+export function isSwitchTab(location: RoughLocation, originalRoutes: RouteConfig[]): boolean {
   function isInMenus(menuData: RouteConfig[]) {
     const targetMenuItem = _find(menuData, (item) => pathToRegexp(`${item.path}(.*)`).test(location.pathname));
 
@@ -142,8 +143,7 @@ export function getRenderRoute(options: {
     ...renderRoute,
     hash: hashString,
     name:
-      setTabName?.({ path: renderRoute.path, name: renderRoute.name as string, params, location }) ||
-      renderRoute.name,
+      setTabName?.({ path: renderRoute.path, name: renderRoute.name as string, params, location }) || renderRoute.name,
   };
 }
 
