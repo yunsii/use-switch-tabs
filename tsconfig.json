@@ -3,8 +3,10 @@
     "target": "esnext",
     "moduleResolution": "node",
     "baseUrl": "./",
+    "jsx": "react",
     "declaration": true,
     "skipLibCheck": true,
     "esModuleInterop": true
-  }
+  },
+  "exclude": ["example"]
 }
