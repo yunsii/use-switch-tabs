@@ -87,7 +87,9 @@ export default function BasicLayout(props: BasicLayoutProps) {
         <Layout.Content>
           <SwitchTabs
             originalRoutes={route.routes}
-            persistent
+            persistent={{
+              cacheName: 'use-switch-tabs-state',
+            }}
             // mode={Mode.Dynamic}
             // setTabName={({ path, name }) => {
             //   if (path === '/search/applications') {

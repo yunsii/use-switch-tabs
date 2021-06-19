@@ -4,6 +4,7 @@ import _find from 'lodash/find';
 import _findIndex from 'lodash/findIndex';
 import _isEqual from 'lodash/isEqual';
 import _omit from 'lodash/omit';
+import _get from 'lodash/get';
 import _isArray from 'lodash/isArray';
 import * as H from 'history';
 
@@ -61,6 +62,11 @@ export interface UseSwitchTabsOptions {
     | {
         /** 是否强制渲染，参考 [Tabs.TabPane.forceRender](https://ant.design/components/tabs-cn/#Tabs.TabPane) */
         force?: boolean;
+        /**
+         * 持久化时在 localStorage 中的名称，默认为 tabLocations。
+         * 已知多个项目部署在非根目录需要通过 cacheName 区分，否则会在导致标签页渲染异常。
+         */
+        cacheName?: string;
       }
     | boolean;
   children: JSX.Element;
@@ -76,18 +82,19 @@ export interface UseSwitchTabsOptions {
 function useSwitchTabs(options: UseSwitchTabsOptions) {
   const {
     mode = Mode.Route,
-    setTabName,
     originalRoutes,
     persistent,
     location,
     history,
     children,
     actionRef: propsActionRef,
+    setTabName,
   } = options;
   const currentTabLocation = _omit(location, ['key']);
+  const cacheName = _get(persistent, 'cacheName', 'tabLocations');
 
   const actionRef = useRef<ActionType>();
-  const [tabLocations, setTabLocations] = useLocalStorageState<SwitchTab['location'][]>('tabLocations', []);
+  const [tabLocations, setTabLocations] = useLocalStorageState<SwitchTab['location'][]>(cacheName, []);
   const [tabs, setTabs] = useState<SwitchTab[]>(() => {
     if (persistent && _isArray(tabLocations) && tabLocations.length) {
       return tabLocations.map((tabLocation) => {

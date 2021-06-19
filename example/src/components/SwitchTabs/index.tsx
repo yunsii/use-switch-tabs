@@ -40,13 +40,13 @@ export default function RouteTabs(props: RouteTabsProps): JSX.Element {
 
   const { tabs, activeKey, handleSwitch, handleRemove, handleRemoveOthers, handRemoveRightTabs } = useSwitchTabs({
     children,
-    setTabName,
     originalRoutes,
     mode,
     persistent,
     location,
     history,
     actionRef,
+    setTabName,
   });
 
   const remove = usePersistFn((key: string) => {
