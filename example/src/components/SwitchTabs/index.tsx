@@ -33,14 +33,14 @@ export interface RouteTabsProps
 }
 
 export default function RouteTabs(props: RouteTabsProps): JSX.Element {
-  const { mode, fixed, originalRoutes, setTabTitle, persistent, children, ...rest } = props;
+  const { mode, fixed, originalRoutes, setTabName, persistent, children, ...rest } = props;
 
   const location = useLocation();
   const actionRef = useRef<ActionType>();
 
   const { tabs, activeKey, handleSwitch, handleRemove, handleRemoveOthers, handRemoveRightTabs } = useSwitchTabs({
     children,
-    setTabTitle,
+    setTabName,
     originalRoutes,
     mode,
     persistent,

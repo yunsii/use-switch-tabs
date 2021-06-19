@@ -5,6 +5,7 @@ import { GithubOutlined } from '@ant-design/icons';
 import * as H from 'history';
 
 import SwitchTabs from '@/components/SwitchTabs';
+// import { Mode } from '../../../src';
 
 export interface IRoute {
   component: React.ComponentType<{ location: H.Location }>;
@@ -84,7 +85,18 @@ export default function BasicLayout(props: BasicLayoutProps) {
       </Layout.Sider>
       <Layout style={{ height: '100vh', marginLeft: 240 }}>
         <Layout.Content>
-          <SwitchTabs originalRoutes={route.routes}>{children}</SwitchTabs>
+          <SwitchTabs
+            originalRoutes={route.routes}
+            persistent
+            // mode={Mode.Dynamic}
+            // setTabName={({ path, name }) => {
+            //   if (path === '/search/applications') {
+            //     return `${name} - 自定义`;
+            //   }
+            // }}
+          >
+            {children}
+          </SwitchTabs>
         </Layout.Content>
         <Layout.Footer style={{ textAlign: 'center' }}>
           <Space>
