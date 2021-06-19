@@ -1,6 +1,6 @@
 {
   "name": "use-switch-tabs",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "React hook used to convert Switch-like component to Tabs-like component state. 用于将类 Switch 组件转换为 Tabs 组件状态的 React hook。",
   "main": "./lib/index.js",
   "module": "./es/index.js",
