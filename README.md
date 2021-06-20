@@ -15,3 +15,10 @@ React hook used to convert Switch-like component to Tabs-like component state. �
 - `persistent`，支持页面刷新之后恢复上次的标签页状态
 
 注：返回默认只会返回上次的路由，所以如果上次的路由没有关闭，会在两个路由之前反复横跳，当删除上次打开的标签页之后再调用该返回方法时只会打印警告。
+
+## 如何使用？
+
+- 基于 useSwitchTabs 封装 [SwitchTabs](./example/src/components/SwitchTabs/index.tsx#L35) 组件
+- 在 Layout 层[使用 SwitchTabs 组件](./example/src/layouts/BasicLayout.tsx#L88)
+
+> 细节可参考 example 中的用法，也可参考 [ant-design-pro-plus](https://github.com/theprimone/ant-design-pro-plus/blob/master/src/layouts/BasicLayout.tsx#L185)
