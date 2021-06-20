@@ -32,7 +32,7 @@ export interface RouteTabsProps
   fixed?: boolean;
 }
 
-export default function RouteTabs(props: RouteTabsProps): JSX.Element {
+export default function SwitchTabs(props: RouteTabsProps): JSX.Element {
   const { mode, fixed, originalRoutes, setTabName, persistent, children, ...rest } = props;
 
   const location = useLocation();
