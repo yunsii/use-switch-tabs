@@ -2,7 +2,7 @@
 
 <p>
   <a href="https://github.com/theprimone/use-switch-tabs/stargazers"><img src="https://img.shields.io/github/stars/theprimone/use-switch-tabs" alt="GitHub stars"></a>
-  <a href="https://www.npmjs.com/package/@theprimone/use-switch-tabs"><img src="https://img.shields.io/npm/v/use-switch-tabs.svg" alt="npm package"></a>
+  <a href="https://www.npmjs.com/package/use-switch-tabs"><img src="https://img.shields.io/npm/v/use-switch-tabs.svg" alt="npm package"></a>
 </p>
 
 React hook used to convert Switch-like component to Tabs-like component state. 用于将类 Switch 组件转换为 Tabs 组件状态的 React hook。
