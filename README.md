@@ -26,4 +26,4 @@ React hook used to convert Switch-like component to Tabs-like component state. �
 - 基于 useSwitchTabs 封装 [SwitchTabs](./example/src/components/SwitchTabs/index.tsx#L35) 组件
 - 在 Layout 层[使用 SwitchTabs 组件](./example/src/layouts/BasicLayout.tsx#L88)
 
-> 细节可参考 example 中的用法，也可参考 [ant-design-pro-plus](https://github.com/theprimone/ant-design-pro-plus/blob/master/src/layouts/BasicLayout.tsx#L185)
+> 细节可参考 example 中的用法，也可参考 [ant-design-pro-plus](https://github.com/theprimone/ant-design-pro-plus/blob/master/src/layouts/BasicLayout.tsx)
