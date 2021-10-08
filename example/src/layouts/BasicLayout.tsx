@@ -14,6 +14,7 @@ export interface IRoute {
   path: string;
   redirect: string;
   routes: IRoute[];
+  hideInMenu?: boolean;
 }
 
 export interface BasicLayoutProps {
@@ -53,6 +54,10 @@ export default function BasicLayout(props: BasicLayoutProps) {
     return (
       <Menu mode='inline' selectedKeys={[location.pathname]}>
         {getRoutesMenuData(route.routes).map((item) => {
+          if (item.hideInMenu) {
+            return null;
+          }
+
           const subRoutes = item.routes;
 
           if (subRoutes) {

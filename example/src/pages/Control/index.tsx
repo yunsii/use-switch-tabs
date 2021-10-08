@@ -1,5 +1,6 @@
 import React from 'react';
-import { Card, Alert, Button, Space } from 'antd';
+import { Card, Alert, Button, Space, Input } from 'antd';
+import { history } from '@vitjs/runtime';
 
 export default function Control() {
   const renderCount = React.useRef(0);
@@ -17,6 +18,17 @@ export default function Control() {
           marginBottom: 48,
         }}
       />
+      {/* 仅开发环境可用，部署到 GitHub Pages 后不能使用动态路由 */}
+      {process.env.NODE_ENV === 'development' && (
+        <div style={{ marginBottom: 24, maxWidth: 480 }}>
+          <Input.Search
+            onSearch={(value) => {
+              history.push(`/dynamic/${value}`);
+            }}
+            enterButton='go to /dynamic/:inputValue'
+          />
+        </div>
+      )}
       <Space>
         <Button
           type='primary'
@@ -55,7 +67,7 @@ export default function Control() {
           close, go to '/profile/basic' and refresh
         </Button>
       </Space>
-      <div>renderCount: {renderCount.current}</div>
+      <div style={{ marginTop: 24 }}>renderCount: {renderCount.current}</div>
     </Card>
   );
 }

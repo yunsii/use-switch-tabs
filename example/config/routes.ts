@@ -62,6 +62,13 @@ export default [
               },
             ],
           },
+          {
+            path: '/dynamic/:anyStr',
+            icon: 'table',
+            name: '动态路由',
+            component: './pages/Dynamic',
+            hideInMenu: true,
+          },
         ],
       },
     ],
