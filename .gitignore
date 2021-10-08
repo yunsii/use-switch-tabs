@@ -2,3 +2,4 @@ node_modules
 es
 lib
 *.log
+.vit
