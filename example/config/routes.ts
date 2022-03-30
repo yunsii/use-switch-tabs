@@ -1,7 +1,7 @@
 export default [
   {
     path: '/',
-    component: './layouts/BlankLayout',
+    component: './layouts/RootLayout',
     routes: [
       {
         path: '/',
@@ -26,6 +26,19 @@ export default [
             icon: 'control',
             name: '控制台',
             component: './pages/Control',
+          },
+          {
+            path: '/query',
+            icon: 'question',
+            name: '查询页',
+            component: './pages/Query',
+          },
+          {
+            path: '/result',
+            icon: 'control',
+            name: '结果页',
+            component: './pages/Result',
+            hideInMenu: true,
           },
           {
             path: '/profile',

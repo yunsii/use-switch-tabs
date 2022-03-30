@@ -125,18 +125,19 @@ export function getRenderRoute(options: {
   let hashString = '';
 
   if (!_isEmpty(params) || !_isEmpty(search) || !_isEmpty(state)) {
-    hashString = hash(
-      JSON.stringify({
-        ...params,
-        /**
-         * 如果在 router.push 的时候设置 query ，可能导致查询参数为 number 类型，在点击标签页标题的时候又会变为 string 类型
-         * 导致了计算的 hash 值可能不唯一
-         * 故统一转换为 string 类型
-         */
-        search,
-        ...(state as any),
-      })
-    );
+    const hashObject = {
+      ...params,
+      /**
+       * 如果在 router.push 的时候设置 query ，可能导致查询参数为 number 类型，在点击标签页标题的时候又会变为 string 类型
+       * 导致了计算的 hash 值可能不唯一，故统一转换为 string 类型的 search 字段来处理，而不是使用 query 字段
+       *
+       * 又当前 React Router Dom 在 history.push() 的时候如果对象中存在 search 字段时，如果 search 首字母不是 ? 会被插入一个 ?
+       * 故统一处理判断首字母是否为问号
+       */
+      search: search.charAt(0) === '?' ? search.slice(1) : search,
+      ...(state as any),
+    };
+    hashString = hash(JSON.stringify(hashObject));
   }
 
   return {
