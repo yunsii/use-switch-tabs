@@ -1,1 +1,0 @@
-import"./index.c8112931.js";import{C as e}from"./index.640b22f9.js";import{k as t,R as r}from"./vendor.ab482dd2.js";function a(){const a=t();return r.createElement(e,null,"match params:",r.createElement("div",{style:{whiteSpace:"pre-wrap"}},JSON.stringify(a,null,2)))}export default a;
