@@ -107,14 +107,14 @@ export default function BasicLayout(props: BasicLayoutProps) {
         </Layout.Content>
         <Layout.Footer style={{ textAlign: 'center' }}>
           <Space>
-            <a href='https://github.com/theprimone/use-switch-tabs' target='_blank'>
+            <a href='https://github.com/yunsii/use-switch-tabs' target='_blank'>
               <Typography.Text type='secondary'>
                 <GithubOutlined />
               </Typography.Text>
             </a>
             <Divider type='vertical' />
-            <a href='https://github.com/theprimone' target='_blank'>
-              <Typography.Text type='secondary'>theprimone</Typography.Text>
+            <a href='https://github.com/yunsii' target='_blank'>
+              <Typography.Text type='secondary'>yunsii</Typography.Text>
             </a>
           </Space>
         </Layout.Footer>

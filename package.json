@@ -5,8 +5,8 @@
   "main": "./lib/index.js",
   "module": "./es/index.js",
   "types": "./lib/index.d.ts",
-  "repository": "https://github.com/theprimone/use-switch-tabs.git",
-  "author": "theprimone <yuns.xie@qq.com>",
+  "repository": "https://github.com/yunsii/use-switch-tabs.git",
+  "author": "yunsii <yuns.xie@qq.com>",
   "license": "MIT",
   "files": [
     "es",
