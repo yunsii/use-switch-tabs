@@ -5,7 +5,7 @@ import { GithubOutlined } from '@ant-design/icons';
 import * as H from 'history';
 
 import SwitchTabs from '@/components/SwitchTabs';
-// import { Mode } from '../../../src';
+import { Mode } from '../../../src';
 
 export interface IRoute {
   component: React.ComponentType<{ location: H.Location }>;
@@ -95,7 +95,7 @@ export default function BasicLayout(props: BasicLayoutProps) {
             persistent={{
               cacheName: 'use-switch-tabs-state',
             }}
-            // mode={Mode.Dynamic}
+            mode={Mode.Dynamic}
             // setTabName={({ path, name }) => {
             //   if (path === '/search/applications') {
             //     return `${name} - 自定义`;
