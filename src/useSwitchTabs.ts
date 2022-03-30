@@ -157,7 +157,11 @@ function useSwitchTabs(options: UseSwitchTabsOptions) {
      * 如：一个会调用 `window.closeAndGoBackTab(path)` 的页面在 F5 刷新之后
      */
     const targetTab = getTab(keyToSwitch);
-    history.push(targetTab ? targetTab.location : (keyToSwitch as any));
+    if (targetTab) {
+      history.push(targetTab.location);
+    } else {
+      history.push(keyToSwitch);
+    }
 
     if (force) {
       callback?.();
@@ -177,20 +181,17 @@ function useSwitchTabs(options: UseSwitchTabsOptions) {
       const getNextTabKeyByRemove = () => (removeKey === currentTabKey ? getNextTab()?.key : currentTabKey);
 
       handleSwitch(nextTabKey || getNextTabKeyByRemove(), callback, force);
-
       setTabs((prevTabs) => processTabs(prevTabs.filter((item) => item.key !== removeKey)));
     }
   );
 
   const handleRemoveOthers = usePersistFn((currentKey: string, callback?: () => void) => {
     handleSwitch(currentKey, callback);
-
     setTabs((prevTabs) => processTabs(prevTabs.filter((item) => item.key === currentKey)));
   });
 
   const handRemoveRightTabs = usePersistFn((currentKey: string, callback?: () => void) => {
     handleSwitch(getTab(currentKey)!.key, callback);
-
     setTabs((prevTabs) => processTabs(prevTabs.slice(0, _findIndex(prevTabs, { key: currentKey }) + 1)));
   });
 
@@ -266,7 +267,7 @@ function useSwitchTabs(options: UseSwitchTabsOptions) {
 
   const goBackTab = usePersistFn((path?: string, callback?: () => void, force?: boolean) => {
     if (!path && (!prevActiveKey || !getTab(prevActiveKey))) {
-      console.warn('go back failed, no previous actived key or previous tab is closed.');
+      console.warn('go back failed, no previous activated key or previous tab is closed.');
       return;
     }
 
@@ -286,7 +287,7 @@ function useSwitchTabs(options: UseSwitchTabsOptions) {
   /** 关闭当前标签页并返回到上次打开的标签页 */
   const closeAndGoBackTab = usePersistFn((path?: string, callback?: () => void, force?: boolean) => {
     if (!path && (!prevActiveKey || !getTab(prevActiveKey))) {
-      console.warn('close and go back failed, no previous actived key or previous tab is closed.');
+      console.warn('close and go back failed, no previous activated key or previous tab is closed.');
       return;
     }
 
@@ -326,10 +327,10 @@ function useSwitchTabs(options: UseSwitchTabsOptions) {
   }, []);
 
   useEffect(() => {
-    const activedTab = getTab(currentTabKey);
+    const activatedTab = getTab(currentTabKey);
 
-    if (activedTab) {
-      const { location: prevTabLocation } = activedTab;
+    if (activatedTab) {
+      const { location: prevTabLocation } = activatedTab;
       if (!_isEqual(currentTabLocation, prevTabLocation)) {
         reloadTab(currentTabKey, currentRenderRoute.name, currentTabLocation, children);
       } else {
