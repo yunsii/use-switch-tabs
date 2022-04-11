@@ -358,13 +358,17 @@ function useSwitchTabs(options: UseSwitchTabsOptions) {
     // 但会再次创建一个当前 location 对应的标签页
   }, [children, currentTabKey]);
 
-  if (propsActionRef) {
+  useEffect(() => {
+    if (!propsActionRef) {
+      return;
+    }
+
     if (typeof propsActionRef === 'function') {
       propsActionRef(actionRef.current);
     } else {
       propsActionRef.current = actionRef.current;
     }
-  }
+  }, []);
 
   return {
     tabs,
