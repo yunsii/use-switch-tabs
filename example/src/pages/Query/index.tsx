@@ -1,10 +1,22 @@
-import React, { useState } from 'react';
-import { Card, Input, Checkbox, Button, Form } from 'antd';
-import { history } from '@vitjs/runtime';
+import React, { useEffect, useRef, useState } from 'react';
+import { Card, Input, Checkbox, Button, Form, message } from 'antd';
+import { history, useLocation } from '@vitjs/runtime';
 
 export default function Query() {
   const [text, setText] = useState<string>();
   const [options, setOptions] = useState<any[]>([]);
+
+  const pageLocation = useLocation();
+  const pageTabKeyRef = useRef(window.tabsAction.getTabKey(pageLocation));
+  const [active, setActive] = useState(pageTabKeyRef.current === window.tabsAction.getTabKey());
+
+  useEffect(() => {
+    const disposer = window.tabsAction.listenActiveChange((tabKey) => {
+      setActive(pageTabKeyRef.current === tabKey);
+    });
+
+    return () => disposer();
+  }, []);
 
   const handleSearch = () => {
     history.push({
@@ -15,7 +27,7 @@ export default function Query() {
   };
 
   return (
-    <Card title='Query'>
+    <Card title={`Query [${active ? 'active' : 'inactive'}]`}>
       <Form.Item
         labelCol={{ xs: 24 }}
         labelAlign='left'

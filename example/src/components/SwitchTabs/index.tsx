@@ -3,7 +3,7 @@ import { Tabs, Dropdown, Menu } from 'antd';
 import { TabsProps } from 'antd/lib/tabs';
 import { MenuProps } from 'antd/lib/menu';
 import * as H from 'history-with-query';
-import { usePersistFn } from 'ahooks';
+import { useMemoizedFn } from 'ahooks';
 import classNames from 'classnames';
 import _get from 'lodash/get';
 import { history, useLocation } from '@vitjs/runtime';
@@ -38,7 +38,7 @@ export default function SwitchTabs(props: RouteTabsProps): JSX.Element {
   const location = useLocation();
   const actionRef = useRef<ActionType>();
 
-  const { tabs, activeKey, handleSwitch, handleRemove, handleRemoveOthers, handRemoveRightTabs } = useSwitchTabs({
+  const { tabs, activeKey, handleSwitch, handleRemove, handleRemoveOthers, handleRemoveRightTabs } = useSwitchTabs({
     children,
     originalRoutes,
     mode,
@@ -49,17 +49,17 @@ export default function SwitchTabs(props: RouteTabsProps): JSX.Element {
     setTabName,
   });
 
-  const remove = usePersistFn((key: string) => {
+  const remove = useMemoizedFn((key: string) => {
     handleRemove(key);
   });
 
-  const handleTabEdit = usePersistFn((targetKey: string, action: 'add' | 'remove') => {
+  const handleTabEdit = useMemoizedFn((targetKey: string, action: 'add' | 'remove') => {
     if (action === 'remove') {
       remove(targetKey);
     }
   });
 
-  const handleTabsMenuClick = usePersistFn((tabKey: string): MenuProps['onClick'] => (event) => {
+  const handleTabsMenuClick = useMemoizedFn((tabKey: string): MenuProps['onClick'] => (event) => {
     const { key, domEvent } = event;
     domEvent.stopPropagation();
 
@@ -68,11 +68,11 @@ export default function SwitchTabs(props: RouteTabsProps): JSX.Element {
     } else if (key === CloseTabKey.Others) {
       handleRemoveOthers(tabKey);
     } else if (key === CloseTabKey.ToRight) {
-      handRemoveRightTabs(tabKey);
+      handleRemoveRightTabs(tabKey);
     }
   });
 
-  const setMenu = usePersistFn((key: string, index: number) => (
+  const setMenu = useMemoizedFn((key: string, index: number) => (
     <Menu onClick={handleTabsMenuClick(key)}>
       <Menu.Item disabled={tabs.length === 1} key={CloseTabKey.Current}>
         closeCurrent
@@ -86,7 +86,7 @@ export default function SwitchTabs(props: RouteTabsProps): JSX.Element {
     </Menu>
   ));
 
-  const setTab = usePersistFn((tab: React.ReactNode, key: string, index: number) => (
+  const setTab = useMemoizedFn((tab: React.ReactNode, key: string, index: number) => (
     <span onContextMenu={(event) => event.preventDefault()}>
       <Dropdown overlay={setMenu(key, index)} trigger={['contextMenu']}>
         <span>{tab}</span>

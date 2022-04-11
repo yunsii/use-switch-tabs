@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
-import { useLocalStorageState, usePersistFn, usePrevious } from 'ahooks';
+import { useLocalStorageState, useMemoizedFn, usePrevious } from 'ahooks';
 import _find from 'lodash/find';
 import _findIndex from 'lodash/findIndex';
 import _isEqual from 'lodash/isEqual';
@@ -46,6 +46,8 @@ export interface SetTabNamePayload {
 
 export type SetTabNameFn = (payload: SetTabNamePayload) => React.ReactNode | void;
 
+export type ListenActiveChangeCallback = (activeKey: string) => void;
+
 export interface ActionType {
   reloadTab: (path?: string) => void;
   /** 如果已经打开的标签页会触发 callback ，如果 force 为 true ，总会调用 callback */
@@ -53,6 +55,10 @@ export interface ActionType {
   /** 关闭后自动切换到附近的标签页，如果是最后一个标签页不可删除 */
   closeTab: (path?: string, callback?: () => void, force?: boolean) => void;
   closeAndGoBackTab: (path?: string, callback?: () => void, force?: boolean) => void;
+  /** 获取 location 对应的 tabKey，如果没有入参，返回当前激活的 tabKey */
+  getTabKey: (location?: RoughLocation) => string;
+  /** 监听 activeKey 变化事件 */
+  listenActiveChange: (callback: ListenActiveChangeCallback) => () => void;
 }
 
 export interface UseSwitchTabsOptions {
@@ -74,6 +80,7 @@ export interface UseSwitchTabsOptions {
   location: H.Location;
   history: Pick<H.History, 'push'>;
   actionRef?: React.MutableRefObject<ActionType | undefined> | ((actionRef: ActionType) => void);
+  onCreateTab?: (tabKey: string) => void;
 
   /** Mode.Dynamic 时可用  */
   setTabName?: SetTabNameFn;
@@ -94,7 +101,9 @@ function useSwitchTabs(options: UseSwitchTabsOptions) {
   const cacheName = _get(persistent, 'cacheName', 'tabLocations');
 
   const actionRef = useRef<ActionType>();
-  const [tabLocations, setTabLocations] = useLocalStorageState<SwitchTab['location'][]>(cacheName, []);
+  const [tabLocations, setTabLocations] = useLocalStorageState<SwitchTab['location'][]>(cacheName, {
+    defaultValue: [],
+  });
   const [tabs, setTabs] = useState<SwitchTab[]>(() => {
     if (persistent && _isArray(tabLocations) && tabLocations.length) {
       return tabLocations.map((tabLocation) => {
@@ -116,6 +125,7 @@ function useSwitchTabs(options: UseSwitchTabsOptions) {
     }
     return [];
   });
+  const listenChangeEventsRef = useRef<ListenActiveChangeCallback[]>([]);
 
   const currentRenderRoute = getRenderRoute({
     location: currentTabLocation,
@@ -130,14 +140,14 @@ function useSwitchTabs(options: UseSwitchTabsOptions) {
 
   const prevActiveKey = usePrevious(currentTabKey, (prev, next) => prev !== next);
 
-  const getTab = usePersistFn((tabKey: string) => _find(tabs, { key: tabKey }));
+  const getTab = useMemoizedFn((tabKey: string) => _find(tabs, { key: tabKey }));
 
-  const processTabs = usePersistFn((_tabs: SwitchTab[]) => {
+  const processTabs = useMemoizedFn((_tabs: SwitchTab[]) => {
     return _tabs.map((item) => (_tabs.length === 1 ? { ...item, closable: false } : item));
   });
 
   /** 获取激活标签页的相邻标签页 */
-  const getNextTab = usePersistFn(() => {
+  const getNextTab = useMemoizedFn(() => {
     const removeIndex = _findIndex(tabs, { key: currentTabKey });
     const nextIndex = removeIndex >= 1 ? removeIndex - 1 : removeIndex + 1;
     return tabs[nextIndex];
@@ -146,7 +156,7 @@ function useSwitchTabs(options: UseSwitchTabsOptions) {
   /**
    * force: 是否在目标标签页不存在的时候强制回调函数
    */
-  const handleSwitch = usePersistFn((keyToSwitch: string, callback?: () => void, force: boolean = false) => {
+  const handleSwitch = useMemoizedFn((keyToSwitch: string, callback?: () => void, force: boolean = false) => {
     if (!keyToSwitch) {
       return;
     }
@@ -171,7 +181,7 @@ function useSwitchTabs(options: UseSwitchTabsOptions) {
   });
 
   /** 删除标签页处理事件，可接收一个 `nextTabKey` 参数，自定义需要返回的标签页 */
-  const handleRemove = usePersistFn(
+  const handleRemove = useMemoizedFn(
     (removeKey: string, nextTabKey?: string, callback?: () => void, force?: boolean) => {
       if (tabs.length === 1) {
         console.warn('the final tab, can not remove.');
@@ -185,14 +195,18 @@ function useSwitchTabs(options: UseSwitchTabsOptions) {
     }
   );
 
-  const handleRemoveOthers = usePersistFn((currentKey: string, callback?: () => void) => {
+  const handleRemoveOthers = useMemoizedFn((currentKey: string, callback?: () => void) => {
     handleSwitch(currentKey, callback);
-    setTabs((prevTabs) => processTabs(prevTabs.filter((item) => item.key === currentKey)));
+    setTabs((prevTabs) => {
+      return processTabs(prevTabs.filter((item) => item.key === currentKey));
+    });
   });
 
-  const handleRemoveRightTabs = usePersistFn((currentKey: string, callback?: () => void) => {
+  const handleRemoveRightTabs = useMemoizedFn((currentKey: string, callback?: () => void) => {
     handleSwitch(getTab(currentKey)!.key, callback);
-    setTabs((prevTabs) => processTabs(prevTabs.slice(0, _findIndex(prevTabs, { key: currentKey }) + 1)));
+    setTabs((prevTabs) => {
+      return processTabs(prevTabs.slice(0, _findIndex(prevTabs, { key: currentKey }) + 1));
+    });
   });
 
   /**
@@ -200,7 +214,7 @@ function useSwitchTabs(options: UseSwitchTabsOptions) {
    *
    * @param newTab
    */
-  const addTab = usePersistFn((newTab: SwitchTab, follow?: string) => {
+  const addTab = useMemoizedFn((newTab: SwitchTab, follow?: string) => {
     setTabs((prevTabs) => {
       let result = [...prevTabs];
       if (follow) {
@@ -234,7 +248,7 @@ function useSwitchTabs(options: UseSwitchTabsOptions) {
    * @param location 需要刷新的 tab location
    * @param content 需要刷新的 tab 渲染的内容
    */
-  const reloadTab = usePersistFn(
+  const reloadTab = useMemoizedFn(
     (
       reloadKey: string = currentTabKey,
       tabTitle?: React.ReactNode,
@@ -265,7 +279,7 @@ function useSwitchTabs(options: UseSwitchTabsOptions) {
     }
   );
 
-  const goBackTab = usePersistFn((path?: string, callback?: () => void, force?: boolean) => {
+  const goBackTab = useMemoizedFn((path?: string, callback?: () => void, force?: boolean) => {
     if (!path && (!prevActiveKey || !getTab(prevActiveKey))) {
       console.warn('go back failed, no previous activated key or previous tab is closed.');
       return;
@@ -275,7 +289,7 @@ function useSwitchTabs(options: UseSwitchTabsOptions) {
   });
 
   /** 关闭后自动切换到附近的标签页，如果是最后一个标签页不可删除 */
-  const closeTab = usePersistFn((path?: string, callback?: () => void, force?: boolean) => {
+  const closeTab = useMemoizedFn((path?: string, callback?: () => void, force?: boolean) => {
     if (path && !getTab(path)) {
       console.warn('close failed, target tab is closed.');
       return;
@@ -285,13 +299,32 @@ function useSwitchTabs(options: UseSwitchTabsOptions) {
   });
 
   /** 关闭当前标签页并返回到上次打开的标签页 */
-  const closeAndGoBackTab = usePersistFn((path?: string, callback?: () => void, force?: boolean) => {
+  const closeAndGoBackTab = useMemoizedFn((path?: string, callback?: () => void, force?: boolean) => {
     if (!path && (!prevActiveKey || !getTab(prevActiveKey))) {
       console.warn('close and go back failed, no previous activated key or previous tab is closed.');
       return;
     }
 
     handleRemove(currentTabKey, path || prevActiveKey, callback, force);
+  });
+
+  const getTabKey = useMemoizedFn((roughLocation: RoughLocation = currentTabLocation) => {
+    const roughRenderRoute = getRenderRoute({
+      location: roughLocation,
+      mode,
+      originalRoutes,
+      setTabName,
+    });
+
+    return getRenderRouteKey(roughRenderRoute, mode);
+  });
+
+  const listenActiveChange = useMemoizedFn((callback: ListenActiveChangeCallback) => {
+    listenChangeEventsRef.current.push(callback);
+
+    return () => {
+      listenChangeEventsRef.current.filter((item) => item !== callback);
+    };
   });
 
   useEffect(() => {
@@ -310,6 +343,8 @@ function useSwitchTabs(options: UseSwitchTabsOptions) {
       goBackTab,
       closeTab,
       closeAndGoBackTab,
+      getTabKey,
+      listenActiveChange,
     };
 
     return () => {
@@ -322,6 +357,14 @@ function useSwitchTabs(options: UseSwitchTabsOptions) {
         goBackTab: hint,
         closeTab: hint,
         closeAndGoBackTab: hint,
+        getTabKey: () => {
+          hint();
+          return '';
+        },
+        listenActiveChange: () => {
+          hint();
+          return () => {};
+        },
       };
     };
   }, []);
@@ -338,6 +381,10 @@ function useSwitchTabs(options: UseSwitchTabsOptions) {
           console.log(`no effect of tab key: ${currentTabKey}`);
         }
       }
+
+      listenChangeEventsRef.current.map((callback) => {
+        callback(currentTabKey);
+      });
     } else {
       const newTab = {
         title: currentRenderRoute.name,
@@ -353,6 +400,7 @@ function useSwitchTabs(options: UseSwitchTabsOptions) {
       }
       addTab(newTab, follow);
     }
+
     // 不可将当前 location 作为依赖，否则在操作非当前 location 对应的标签页时会有异常
     // 比如在非当前 location 对应的标签页的标签菜单中触发删除其他标签页，会导致本应只有一个标签页时，
     // 但会再次创建一个当前 location 对应的标签页
