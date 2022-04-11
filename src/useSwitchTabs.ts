@@ -190,7 +190,7 @@ function useSwitchTabs(options: UseSwitchTabsOptions) {
     setTabs((prevTabs) => processTabs(prevTabs.filter((item) => item.key === currentKey)));
   });
 
-  const handRemoveRightTabs = usePersistFn((currentKey: string, callback?: () => void) => {
+  const handleRemoveRightTabs = usePersistFn((currentKey: string, callback?: () => void) => {
     handleSwitch(getTab(currentKey)!.key, callback);
     setTabs((prevTabs) => processTabs(prevTabs.slice(0, _findIndex(prevTabs, { key: currentKey }) + 1)));
   });
@@ -372,7 +372,7 @@ function useSwitchTabs(options: UseSwitchTabsOptions) {
     handleSwitch,
     handleRemove,
     handleRemoveOthers,
-    handRemoveRightTabs,
+    handleRemoveRightTabs,
   };
 }
 
