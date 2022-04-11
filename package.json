@@ -16,7 +16,10 @@
     "build": "father build",
     "dev": "cd example && vite --host",
     "build:demo": "cd example && vite build",
-    "release": "release-it"
+    "release": "release-it --npm.skipChecks"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
   },
   "dependencies": {
     "@qixian.cs/path-to-regexp": "^6.1.0",
