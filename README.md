@@ -13,6 +13,8 @@ React hook used to convert Switch-like component to Tabs-like component state. �
   - 关闭标签页 - `actionRef.closeTab()`
   - 返回之前标签页 - `actionRef.goBackTab()`
   - 关闭并返回之前标签页 - `actionRef.closeAndGoBackTab()`
+  - 获取 location 对应的 tabKey，如果没有入参，返回当前激活的 tabKey - `actionRef.getTabKey()`
+  - 监听 activeKey 变化事件 - `actionRef.listenActiveChange()`
 - `follow`，路由定义中新增配置，默认打开方式是添加到所有标签页最后面，可通过配置该属性，使得一个标签页在 `follow` 指定的标签页后面打开
 - `persistent`，支持页面刷新之后恢复上次的标签页状态
 
