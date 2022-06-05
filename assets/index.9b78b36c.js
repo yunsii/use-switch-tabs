@@ -1,1 +1,0 @@
-import"./index.77640ec2.js";import{C as e}from"./index.6c3e5c13.js";import{R as r}from"./vendor.ff3248b1.js";function t(){const t=r.useRef(0);return t.current+=1,r.createElement(e,null,r.createElement("h2",null,"Projects Search Page")," ",r.createElement("br",null),r.createElement("div",null,"renderCount: ",t.current))}export default t;
