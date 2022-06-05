@@ -5,10 +5,6 @@ export default [
     routes: [
       {
         path: '/',
-        redirect: '/welcome',
-      },
-      {
-        path: '/',
         component: './layouts/BasicLayout',
         routes: [
           {

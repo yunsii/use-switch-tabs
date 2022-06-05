@@ -41,21 +41,31 @@ function getOriginalRenderRoute(location: RoughLocation, originalRoutes: RouteCo
   function getMetadata(menuData: RouteConfig[], parent: RouteConfig | null): RenderRoute {
     let result: any;
 
-    /** 根据前缀匹配菜单项，因此，`BasicLayout` 下的 **一级路由** 只要配置了 `name` 属性，总能找到一个 `path` 和 `name` 的组合 */
-    const targetRoute = _find(menuData, (item) => pathToRegexp(`${item.path}(.*)`).test(pathname) && !!item.name);
+    // 当存在重定向时，直接返回结果且不缓存计算结果
+    const redirectRoute = originalRoutes.find((item) => item.path === pathname && item.redirect);
+    if (redirectRoute) {
+      return { ...redirectRoute, renderKey: redirectRoute.redirect! };
+    }
+
+    /**
+     * 根据前缀匹配菜单项，因此，`BasicLayout` 下的 **一级路由** 只要配置了 `name` 属性，总能找到一个 `path` 和 `name` 的组合
+     *
+     * 上述说法有误，可能存在 `redirect` 的情况，此时没有 `name` 字段
+     */
+    const targetRoute = _find(menuData, (item) => !item.redirect && pathToRegexp(`${item.path}(.*)`).test(pathname));
 
     /** 如果为 **一级路由** 直接写入 `result` ，否则父级没有 `component` 时才能写入 `result` */
     if ((!parent && targetRoute) || (parent && !parent.component && targetRoute)) {
       result = {
-        renderKey: targetRoute.path!,
         ...targetRoute,
+        renderKey: targetRoute.redirect || targetRoute.path!,
       };
     }
     /** 如果父级配置了 `hideChildrenInMenu` ，子级配置了 `name` 则重写 `result` */
     if (parent?.hideChildrenInMenu && targetRoute) {
       result = {
-        renderKey: parent.path!,
         ...targetRoute,
+        renderKey: parent.path!,
       };
     }
 
@@ -98,7 +108,7 @@ export function getParams(path: string, pathname: string): { [key: string]: stri
 /**
  * 获取要激活的标签页信息
  *
- * @param options 其中，`location` 必须是 `react-router` 注入的 `location`，否则部署到非根目录功能时功能异常
+ * @param options 其中，`location` 必须是 `react-router` 注入的 `location`，否则部署到非根目录时功能异常
  * @returns
  */
 export function getRenderRoute(options: {

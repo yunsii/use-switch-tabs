@@ -27,6 +27,8 @@ export interface RouteConfig {
   path?: string;
   /** 配置该路由标签页紧跟指定的某个路由 */
   follow?: string;
+  /** 重定向 */
+  redirect?: string;
   component?: React.ComponentType<{ location: H.Location }>;
 }
 
@@ -98,6 +100,7 @@ function useSwitchTabs(options: UseSwitchTabsOptions) {
     setTabName,
   } = options;
   const currentTabLocation = _omit(location, ['key']);
+  console.log('currentTabLocation', currentTabLocation);
   const cacheName = _get(persistent, 'cacheName', 'tabLocations');
 
   const actionRef = useRef<ActionType>();
@@ -133,6 +136,7 @@ function useSwitchTabs(options: UseSwitchTabsOptions) {
     originalRoutes,
     setTabName,
   });
+  console.log('currentRenderRoute', currentRenderRoute);
 
   const currentTabKey = useMemo(() => {
     return getRenderRouteKey(currentRenderRoute, mode);
