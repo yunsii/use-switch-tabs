@@ -42,7 +42,7 @@ function getOriginalRenderRoute(location: RoughLocation, originalRoutes: RouteCo
     let result: any;
 
     // 当存在重定向时，直接返回结果且不缓存计算结果
-    const redirectRoute = originalRoutes.find((item) => item.path === pathname && item.redirect);
+    const redirectRoute = menuData.find((item) => item.path === pathname && item.redirect);
     if (redirectRoute) {
       return { ...redirectRoute, renderKey: redirectRoute.redirect! };
     }
