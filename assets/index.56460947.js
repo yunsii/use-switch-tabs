@@ -1,0 +1,1 @@
+import"./index.37c85b96.js";import{C as t}from"./index.575514fb.js";import{R as e}from"./index.28296a71.js";function o(){const r=e.useRef(0);return r.current+=1,e.createElement(t,null,e.createElement("h2",null,"Applications Search Page")," ",e.createElement("br",null),e.createElement("div",null,"renderCount: ",r.current))}export{o as default};
