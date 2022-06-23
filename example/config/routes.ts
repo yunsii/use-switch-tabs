@@ -72,6 +72,31 @@ export default [
             ],
           },
           {
+            path: '/parent',
+            icon: 'table',
+            name: '嵌套路由',
+            component: './pages/Parent',
+            hideChildrenInMenu: true,
+            routes: [
+              {
+                path: '/parent',
+                redirect: '/parent/child1',
+              },
+              {
+                path: '/parent/child1',
+                component: './pages/Parent/Child1',
+              },
+              {
+                path: '/parent/child2',
+                component: './pages/Parent/Child2',
+              },
+              {
+                path: '/parent/child3',
+                component: './pages/Parent/Child3',
+              },
+            ],
+          },
+          {
             path: '/dynamic/:anyStr',
             icon: 'table',
             name: '动态路由',

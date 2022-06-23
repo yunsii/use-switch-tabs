@@ -44,7 +44,8 @@ function getOriginalRenderRoute(location: RoughLocation, originalRoutes: RouteCo
     // 当存在重定向时，直接返回结果且不缓存计算结果
     const redirectRoute = menuData.find((item) => item.path === pathname && item.redirect);
     if (redirectRoute) {
-      return { ...redirectRoute, renderKey: redirectRoute.redirect! };
+      // TODO: 优化重复点击重定向路由导致的闪烁问题
+      return { ...redirectRoute, renderKey: parent?.hideChildrenInMenu ? parent.path : redirectRoute.redirect! };
     }
 
     /**
@@ -65,6 +66,7 @@ function getOriginalRenderRoute(location: RoughLocation, originalRoutes: RouteCo
     if (parent?.hideChildrenInMenu && targetRoute) {
       result = {
         ...targetRoute,
+        name: targetRoute.name || parent.name,
         renderKey: parent.path!,
       };
     }

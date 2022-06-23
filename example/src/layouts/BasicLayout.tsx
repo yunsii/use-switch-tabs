@@ -15,6 +15,7 @@ export interface IRoute {
   redirect: string;
   routes: IRoute[];
   hideInMenu?: boolean;
+  hideChildrenInMenu?: boolean;
 }
 
 export interface BasicLayoutProps {
@@ -60,7 +61,7 @@ export default function BasicLayout(props: BasicLayoutProps) {
 
           const subRoutes = item.routes;
 
-          if (subRoutes) {
+          if (subRoutes && !item.hideChildrenInMenu) {
             return renderSubMenu(item);
           }
           return (
